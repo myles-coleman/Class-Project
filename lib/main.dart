@@ -11,7 +11,7 @@ void main() async {
   runApp(MaterialApp(
     title: 'Recipe App',
     theme: ThemeData(
-      primarySwatch: Colors.purple,
+      primarySwatch: Colors.green,
     ),
     initialRoute: '/',
     routes: {

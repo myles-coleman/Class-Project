@@ -14,10 +14,7 @@ class HomeRoute extends StatelessWidget {
         child: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              // The user is signed in
-              return const Text('Welcome to the Recipe App!');
-            } else {
+            if (!snapshot.hasData) {
               // The user is not signed in
               return ElevatedButton(
                 child: const Text('Go to Login Page'),
@@ -25,6 +22,17 @@ class HomeRoute extends StatelessWidget {
                   Navigator.pushNamed(context, '/login');
                 },
               );
+            } else {
+              return Scaffold(
+                  // The user is signed in
+                  body: Center(
+                child: ElevatedButton(
+                  child: const Text('Sign Out'),
+                  onPressed: () {
+                    FirebaseAuth.instance.signOut();
+                  },
+                ),
+              ));
             }
           },
         ),

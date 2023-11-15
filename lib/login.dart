@@ -97,8 +97,6 @@ class _LoginRouteState extends State<LoginRoute> {
               if (kDebugMode) {
                 print(_userCredential?.user?.displayName);
               }
-
-              //Navigator.pop(context);
             },
           ),
         ),
