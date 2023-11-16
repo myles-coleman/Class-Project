@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:classproject/firebase_options.dart';
 import 'package:classproject/home.dart';
 import 'package:classproject/login.dart';
+import 'package:classproject/settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,7 @@ void main() async {
     routes: {
       '/': (context) => const HomeRoute(),
       '/login': (context) => const LoginRoute(),
+      '/settings': (context) => const SettingsRoute(),
     },
   ));
 }

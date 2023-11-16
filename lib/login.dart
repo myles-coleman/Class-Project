@@ -79,7 +79,6 @@ class _LoginRouteState extends State<LoginRoute> {
             child: const Text('Sign Out'),
             onPressed: () {
               logout();
-              //Navigator.pop(context);
             },
           ),
         ),
@@ -92,11 +91,12 @@ class _LoginRouteState extends State<LoginRoute> {
         body: Center(
           child: ElevatedButton(
             child: const Text('Sign in With Google'),
-            onPressed: () {
-              signInWithGoogle();
+            onPressed: () async {
+              await signInWithGoogle();
               if (kDebugMode) {
                 print(_userCredential?.user?.displayName);
               }
+              Navigator.pop(context);
             },
           ),
         ),
