@@ -10,7 +10,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MaterialApp(
-    title: 'Recipe App',
     theme: ThemeData(
       primarySwatch: Colors.green,
     ),

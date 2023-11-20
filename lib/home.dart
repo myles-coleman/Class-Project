@@ -21,12 +21,6 @@ class HomeRoute extends StatelessWidget {
             onTap: () {
               Navigator.pushNamed(context, '/settings');
             },
-          ),
-          ListTile(
-            title: const Text('Logout'),
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-            },
           )
         ],
       ),
@@ -37,7 +31,7 @@ class HomeRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipe App'),
+        title: const Text('Home Page'),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
