@@ -1,8 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:classproject/components/recpie.dart';
 
-class HomeRoute extends StatelessWidget {
+//search bar code referenced from https://stackoverflow.com/questions/56346660/how-to-add-a-texfield-inside-the-app-bar-in-flutter
+
+class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
+
+  @override
+  State<HomeRoute> createState() => _HomeRouteState();
+}
+
+class _HomeRouteState extends State<HomeRoute> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   Widget buildDrawer(BuildContext context) {
     return Drawer(
@@ -27,11 +41,70 @@ class HomeRoute extends StatelessWidget {
     );
   }
 
+  Future<List<Recipe>> searchRecipes(String query) async {
+    const apiKey = 'ebd2997c2bmshaf4f87f8121c4ep1494b1jsnf8a459f3a414';
+    const apiUrl = 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com';
+    const url =
+        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search';
+
+    Map<String, String> headers = {
+      'x-rapidapi-key': apiKey,
+      'x-rapidapi-host': apiUrl
+    };
+
+    final uri = Uri.https(apiUrl, '/recipes/search');
+
+    final response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final List<dynamic> data = json.decode(response.body)['results'];
+      return data.map((json) => Recipe.fromJson(json)).toList();
+    } else {
+      // Handle errors
+      throw Exception('Failed to load recipes');
+    }
+  }
+
+  void _showSearchOverlay() async {
+    _searchQuery = _searchController.text;
+    final results = await searchRecipes(_searchQuery);
+    // Display the search results in your UI, you can use a BottomSheet, Dialog, or navigate to a new screen.
+    if (kDebugMode) {
+      print(results);
+    }
+  }
+
+  Widget textBox(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          const Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search for recipes',
+                border: OutlineInputBorder(),
+                hintStyle: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              _showSearchOverlay();
+            },
+            icon: const Icon(Icons.search, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: textBox(context),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
