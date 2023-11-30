@@ -42,17 +42,14 @@ class _HomeRouteState extends State<HomeRoute> {
   }
 
   Future<List<Recipe>> searchRecipes(String query) async {
-    const apiKey = 'ebd2997c2bmshaf4f87f8121c4ep1494b1jsnf8a459f3a414';
+    const apiKey = 'ebd2997c2bmshaf4f87ff8121c4ep1494b1jsnf8a459f3a414';
     const apiUrl = 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com';
-    const url =
-        'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search';
+    final uri = Uri.https(apiUrl, '/recipes/search', {'query': query});
 
     Map<String, String> headers = {
       'x-rapidapi-key': apiKey,
       'x-rapidapi-host': apiUrl
     };
-
-    final uri = Uri.https(apiUrl, '/recipes/search');
 
     final response = await http.get(uri, headers: headers);
 
@@ -61,7 +58,6 @@ class _HomeRouteState extends State<HomeRoute> {
       final List<dynamic> data = json.decode(response.body)['results'];
       return data.map((json) => Recipe.fromJson(json)).toList();
     } else {
-      // Handle errors
       throw Exception('Failed to load recipes');
     }
   }
@@ -80,9 +76,10 @@ class _HomeRouteState extends State<HomeRoute> {
       alignment: Alignment.center,
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: TextField(
-              decoration: InputDecoration(
+              controller: _searchController,
+              decoration: const InputDecoration(
                 hintText: 'Search for recipes',
                 border: OutlineInputBorder(),
                 hintStyle: TextStyle(color: Colors.white),
