@@ -4,6 +4,7 @@ import 'package:classproject/firebase_options.dart';
 import 'package:classproject/home.dart';
 import 'package:classproject/login.dart';
 import 'package:classproject/settings.dart';
+import 'package:classproject/myrecipes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,7 @@ void main() async {
       '/': (context) => const HomeRoute(),
       '/login': (context) => const LoginRoute(),
       '/settings': (context) => const SettingsRoute(),
+      '/myrecipes': (context) => const MyRecipesRoute(),
     },
   ));
 }

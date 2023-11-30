@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:classproject/components/recpie.dart';
+import 'package:classproject/components/details.dart';
+import 'package:classproject/components/drawer.dart';
 
 //search bar code referenced from https://stackoverflow.com/questions/56346660/how-to-add-a-texfield-inside-the-app-bar-in-flutter
 
@@ -17,29 +19,7 @@ class HomeRoute extends StatefulWidget {
 class _HomeRouteState extends State<HomeRoute> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-
-  Widget buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              //check if on the homepage first
-              //Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings');
-            },
-          )
-        ],
-      ),
-    );
-  }
+  List<Recipe> _searchResults = [];
 
   Future<List<Recipe>> searchRecipes(String query) async {
     const apiKey = 'ebd2997c2bmshaf4f87ff8121c4ep1494b1jsnf8a459f3a414';
@@ -65,6 +45,11 @@ class _HomeRouteState extends State<HomeRoute> {
   void _showSearchOverlay() async {
     _searchQuery = _searchController.text;
     final results = await searchRecipes(_searchQuery);
+
+    setState(() {
+      _searchResults = results;
+    });
+
     // Display the search results in your UI, you can use a BottomSheet, Dialog, or navigate to a new screen.
     if (kDebugMode) {
       print(results);
@@ -125,22 +110,64 @@ class _HomeRouteState extends State<HomeRoute> {
           }
         },
       ),
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            // The user is not signed in
-            return ElevatedButton(
-              child: const Text('Go to Login Page'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
-            );
-          } else {
-            return const SizedBox
-                .shrink(); // An empty widget when the user is signed in
-          }
-        },
+      body: Column(
+        children: [
+          if (_searchResults.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                itemCount: _searchResults.length,
+                itemBuilder: (context, index) {
+                  Recipe recipe = _searchResults[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Details(recipe: recipe),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        title: Text(recipe.title),
+                        leading: Image.network(
+                          recipe.imageUrl,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          else
+            // Show a message or any other content when there are no search results
+            const Expanded(
+              child: Center(
+                child: Text('No search results'),
+              ),
+            ),
+
+          // Show a button or any other content when the user is signed in
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return ElevatedButton(
+                  child: const Text('Go to Login Page'),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ],
       ),
     );
   }
