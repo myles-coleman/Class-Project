@@ -67,4 +67,9 @@ class Nutrient {
       unit: json['unit'],
     );
   }
+
+  @override
+  String toString() {
+    return 'Nutrient(name: $name, amount: $amount, unit: $unit)';
+  }
 }
