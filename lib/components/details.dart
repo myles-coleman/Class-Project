@@ -25,7 +25,9 @@ class Details extends StatelessWidget {
             const SizedBox(height: 20),
             Text('Recipe Details: ${recipe.title}'),
             const SizedBox(height: 10),
-            const Text('Nutrition: '),
+            if (recipe.nutrition != null &&
+                recipe.nutrition.nutrients.isNotEmpty)
+              const Text('Nutrition: '),
             for (Nutrient nutrient in recipe.nutrition.nutrients)
               Text('${nutrient.name}: ${nutrient.amount} ${nutrient.unit}'),
           ],

@@ -16,6 +16,10 @@ class Recipe {
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
+    if (kDebugMode) {
+      print('Recipe JSON: $json');
+      print('Nutrition JSON: ${json['nutrition']}');
+    }
     return Recipe(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
@@ -44,12 +48,17 @@ class Nutrition {
     if (kDebugMode) {
       print(json);
     }
-    return Nutrition(
-      nutrients: List<Nutrient>.from(
-        json['nutrients']
-            .map((nutrientJson) => Nutrient.fromJson(nutrientJson)),
-      ),
-    );
+    if (json['nutrients'] != null) {
+      return Nutrition(
+        nutrients: List<Nutrient>.from(
+          json['nutrients']
+              .map((nutrientJson) => Nutrient.fromJson(nutrientJson)),
+        ),
+      );
+    } else {
+      // If 'nutrients' is null or not present, return an empty Nutrition object
+      return Nutrition(nutrients: []);
+    }
   }
 }
 
@@ -61,6 +70,9 @@ class Nutrient {
   Nutrient({required this.name, required this.amount, required this.unit});
 
   factory Nutrient.fromJson(Map<String, dynamic> json) {
+    if (kDebugMode) {
+      print('Nutrient JSON: $json');
+    }
     return Nutrient(
       name: json['name'],
       amount: json['amount'].toDouble(),

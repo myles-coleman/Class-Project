@@ -8,6 +8,7 @@ import 'package:classproject/components/details.dart';
 import 'package:classproject/components/drawer.dart';
 
 //search bar code referenced from https://stackoverflow.com/questions/56346660/how-to-add-a-texfield-inside-the-app-bar-in-flutter
+//when signed in, drawer opens gray screen upon opening for the first time
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
@@ -49,11 +50,6 @@ class _HomeRouteState extends State<HomeRoute> {
     setState(() {
       _searchResults = results;
     });
-
-    // Display the search results in your UI, you can use a BottomSheet, Dialog, or navigate to a new screen.
-    if (kDebugMode) {
-      print(results);
-    }
   }
 
   Widget textBox(BuildContext context) {
