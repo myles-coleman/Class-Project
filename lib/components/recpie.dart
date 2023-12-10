@@ -13,6 +13,11 @@ class Recipe {
     required this.imageUrl,
     required this.imageType,
     required this.nutrition,
+    //description
+    //ingredients
+    //instructions
+    //readyInMinutes
+    //servings
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
