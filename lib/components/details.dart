@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:classproject/components/recpie.dart';
+import 'package:classproject/storage.dart';
 
 class Details extends StatefulWidget {
   final Recipe recipe;
@@ -16,7 +17,6 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   String displayContent = 'instructions'; // Default content to display
   bool isFavorite = false;
-  String instructions = '';
   String ingredients = '';
 
   @override
@@ -44,9 +44,13 @@ class _DetailsState extends State<Details> {
 
         // Update state variables with received data
         setState(() {
-          instructions =
+          widget.recipe.instructions =
               responseData['instructions'] ?? 'No instructions available';
-          ingredients = (responseData['extendedIngredients'] as List<dynamic>)
+
+          widget.recipe.extendedIngredients =
+              responseData['extendedIngredients'];
+
+          ingredients = (widget.recipe.extendedIngredients as List<dynamic>)
               .map((ingredient) {
             return ingredient['original'];
           }).join('\n');
@@ -63,7 +67,7 @@ class _DetailsState extends State<Details> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> sentences = instructions.split('. ');
+    final List<String> sentences = widget.recipe.instructions.split('. ');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.recipe.title),
@@ -114,6 +118,11 @@ class _DetailsState extends State<Details> {
                   onPressed: () {
                     setState(() {
                       isFavorite = !isFavorite;
+                      final RecipeStorage recipeStorage = RecipeStorage();
+                      recipeStorage.writeRecipe(widget.recipe);
+                      if (kDebugMode) {
+                        print('favorited recipe: ${widget.recipe.id}');
+                      }
                     });
                   },
                   icon: Icon(

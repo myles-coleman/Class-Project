@@ -14,16 +14,21 @@ class MyRecipesRoute extends StatefulWidget {
 
 class _MyRecipesRouteState extends State<MyRecipesRoute> {
   final List<Recipe> _ownedRecipes = [];
-  final List<Recipe> _favoriteRecipes = [];
   final RecipeStorage storage = RecipeStorage();
-  //add owned recipes to favorite recipes
-  //owned recipes stay in the list even when not favorited
 
   @override
   void initState() {
     super.initState();
-    // on page load, fetch the user's recipes with a function
-    // store them in _ownedRecipes
+    fetchOwnedRecipes();
+  }
+
+  Future<void> fetchOwnedRecipes() async {
+    List<Recipe> ownedRecipes = await storage.fetchOwnedRecipes();
+
+    setState(() {
+      _ownedRecipes.clear();
+      _ownedRecipes.addAll(ownedRecipes);
+    });
   }
 
   @override
@@ -61,7 +66,7 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
               child: ListView.builder(
                 itemCount: _ownedRecipes.length,
                 itemBuilder: (context, index) {
-                  Recipe recipe = _favoriteRecipes[index];
+                  Recipe recipe = _ownedRecipes[index];
                   return InkWell(
                     onTap: () {
                       Navigator.push(
