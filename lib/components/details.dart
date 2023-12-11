@@ -48,12 +48,18 @@ class _DetailsState extends State<Details> {
               responseData['instructions'] ?? 'No instructions available';
 
           widget.recipe.extendedIngredients =
-              responseData['extendedIngredients'];
+              (responseData['extendedIngredients'] as List<dynamic>)
+                  .map((ingredientJson) => Ingredient.fromJson(ingredientJson))
+                  .toList();
 
           ingredients = (responseData['extendedIngredients'] as List<dynamic>)
               .map((ingredient) {
             return ingredient['original'];
           }).join('\n');
+
+          if (kDebugMode) {
+            print(widget.recipe.extendedIngredients);
+          }
         });
       } else {
         throw Exception('Failed to load recipe information');

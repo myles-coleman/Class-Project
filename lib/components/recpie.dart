@@ -152,6 +152,21 @@ class Ingredient {
     required this.metaInformation,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'aisle': aisle,
+      'image': image,
+      'name': name,
+      'amount': amount,
+      'unit': unit,
+      'unitShort': unitShort,
+      'unitLong': unitLong,
+      'originalString': originalString,
+      'metaInformation': metaInformation,
+    };
+  }
+
   factory Ingredient.fromJson(Map<String, dynamic> json) {
     return Ingredient(
       id: json['id'] ?? 0,
@@ -162,7 +177,7 @@ class Ingredient {
       unit: json['unit'] ?? '',
       unitShort: json['unitShort'] ?? '',
       unitLong: json['unitLong'] ?? '',
-      originalString: json['originalString'] ?? 'Unknown Ingredient',
+      originalString: json['original'] ?? 'Unknown Ingredient',
       metaInformation: List<String>.from(json['metaInformation'] ?? []),
     );
   }

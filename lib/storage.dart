@@ -31,7 +31,10 @@ class RecipeStorage {
         'id': recipe.id,
         'title': recipe.title,
         'imageUrl': recipe.imageUrl,
-        'extendedIngredients': recipe.extendedIngredients,
+        'extendedIngredients': recipe.extendedIngredients
+            .map((ingredient) =>
+                ingredient.toJson()) // Convert Ingredient to JSON
+            .toList(),
         'instructions': recipe.instructions,
         'userId': user!.uid,
       });
