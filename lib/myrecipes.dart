@@ -75,6 +75,7 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
                           builder: (context) => Details(recipe: recipe),
                         ),
                       );
+                      fetchOwnedRecipes();
                     },
                     child: Container(
                       padding: const EdgeInsets.all(4),

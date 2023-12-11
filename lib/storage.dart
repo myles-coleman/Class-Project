@@ -37,6 +37,7 @@ class RecipeStorage {
             .toList(),
         'instructions': recipe.instructions,
         'userId': user!.uid,
+        'isFavorite': recipe.isFavorite,
       });
       if (kDebugMode) {
         print("Recipe written successfully: ${recipe.id}");
@@ -50,15 +51,15 @@ class RecipeStorage {
     }
   }
 
-  Future<bool> deleteRecipe(Recipe recipe) async {
+  Future<bool> deleteRecipe(String recipeId) async {
     try {
       if (!isInitialized) {
         await initializeDefault();
       }
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      await firestore.collection("recipes").doc(recipe.id.toString()).delete();
+      await firestore.collection("Recipes").doc(recipeId).delete();
       if (kDebugMode) {
-        print("Recipe deleted successfully: ${recipe.id}");
+        print("Recipe deleted successfully: $recipeId");
       }
       return true;
     } catch (error) {

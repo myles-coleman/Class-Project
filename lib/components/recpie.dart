@@ -25,6 +25,7 @@ class Recipe {
   int aggregateLikes;
   String creditText;
   String sourceName;
+  bool isFavorite = false;
 
   Recipe({
     required this.id,
@@ -53,6 +54,7 @@ class Recipe {
     required this.aggregateLikes,
     required this.creditText,
     required this.sourceName,
+    required this.isFavorite,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
@@ -87,6 +89,7 @@ class Recipe {
       aggregateLikes: json['aggregateLikes'] ?? 0,
       creditText: json['creditText'] ?? '',
       sourceName: json['sourceName'] ?? '',
+      isFavorite: json['isFavorite'] ?? false,
     );
   }
 }

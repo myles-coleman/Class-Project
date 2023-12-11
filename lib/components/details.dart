@@ -16,13 +16,11 @@ class Details extends StatefulWidget {
 
 class _DetailsState extends State<Details> {
   String displayContent = 'instructions'; // Default content to display
-  bool isFavorite = false;
   String ingredients = '';
 
   @override
   void initState() {
     super.initState();
-    // Fetch recipe information when the page loads
     fetchRecipeInformation();
   }
 
@@ -56,10 +54,6 @@ class _DetailsState extends State<Details> {
               .map((ingredient) {
             return ingredient['original'];
           }).join('\n');
-
-          if (kDebugMode) {
-            print(widget.recipe.extendedIngredients);
-          }
         });
       } else {
         throw Exception('Failed to load recipe information');
@@ -68,6 +62,24 @@ class _DetailsState extends State<Details> {
       if (kDebugMode) {
         print(error);
       }
+    }
+  }
+
+  Future<void> handleFavoriteToggle() async {
+    setState(() {
+      widget.recipe.isFavorite = !widget.recipe.isFavorite;
+    });
+
+    if (kDebugMode) {
+      print('favorited recipe: ${widget.recipe.isFavorite}');
+    }
+
+    final RecipeStorage recipeStorage = RecipeStorage();
+
+    if (widget.recipe.isFavorite) {
+      await recipeStorage.writeRecipe(widget.recipe);
+    } else {
+      await recipeStorage.deleteRecipe(widget.recipe.id.toString());
     }
   }
 
@@ -121,19 +133,12 @@ class _DetailsState extends State<Details> {
                   child: const Text('Ingredients'),
                 ),
                 IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isFavorite = !isFavorite;
-                      final RecipeStorage recipeStorage = RecipeStorage();
-                      recipeStorage.writeRecipe(widget.recipe);
-                      if (kDebugMode) {
-                        print('favorited recipe: ${widget.recipe.id}');
-                      }
-                    });
+                  onPressed: () async {
+                    await handleFavoriteToggle();
                   },
                   icon: Icon(
                     Icons.favorite,
-                    color: isFavorite ? Colors.red : Colors.grey,
+                    color: widget.recipe.isFavorite ? Colors.red : Colors.grey,
                   ),
                 ),
               ],
