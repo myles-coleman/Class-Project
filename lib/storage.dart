@@ -32,8 +32,7 @@ class RecipeStorage {
         'title': recipe.title,
         'imageUrl': recipe.imageUrl,
         'extendedIngredients': recipe.extendedIngredients
-            .map((ingredient) =>
-                ingredient.toJson()) // Convert Ingredient to JSON
+            .map((ingredient) => ingredient.toJson())
             .toList(),
         'instructions': recipe.instructions,
         'userId': user!.uid,
@@ -70,9 +69,32 @@ class RecipeStorage {
     }
   }
 
-  Future<List<Recipe>> fetchOwnedRecipes() async {
-    List<Recipe> ownedRecipes = [];
+  Stream<List<Recipe>> fetchOwnedRecipesAsStream() {
+    try {
+      if (!isInitialized) {
+        initializeDefault();
+      }
 
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      return firestore
+          .collection('Recipes')
+          .where('userId', isEqualTo: user!.uid)
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data();
+          return Recipe.fromJson(data);
+        }).toList();
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      return Stream.value([]);
+    }
+  }
+
+  Future<List<Recipe>> fetchOwnedRecipes() async {
     try {
       if (!isInitialized) {
         await initializeDefault();
@@ -84,16 +106,17 @@ class RecipeStorage {
           .where('userId', isEqualTo: user!.uid)
           .get();
 
-      for (var doc in querySnapshot.docs) {
+      List<Recipe> ownedRecipes = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        Recipe recipe = Recipe.fromJson(data);
-        ownedRecipes.add(recipe);
-      }
+        return Recipe.fromJson(data);
+      }).toList();
+
+      return ownedRecipes;
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
+      return [];
     }
-    return ownedRecipes;
   }
 }

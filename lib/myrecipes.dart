@@ -13,23 +13,7 @@ class MyRecipesRoute extends StatefulWidget {
 }
 
 class _MyRecipesRouteState extends State<MyRecipesRoute> {
-  final List<Recipe> _ownedRecipes = [];
   final RecipeStorage storage = RecipeStorage();
-
-  @override
-  void initState() {
-    super.initState();
-    fetchOwnedRecipes();
-  }
-
-  Future<void> fetchOwnedRecipes() async {
-    List<Recipe> ownedRecipes = await storage.fetchOwnedRecipes();
-
-    setState(() {
-      _ownedRecipes.clear();
-      _ownedRecipes.addAll(ownedRecipes);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,51 +45,50 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
       ),
       body: Column(
         children: [
-          if (_ownedRecipes.isNotEmpty)
-            Expanded(
-              child: ListView.builder(
-                itemCount: _ownedRecipes.length,
-                itemBuilder: (context, index) {
-                  Recipe recipe = _ownedRecipes[index];
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Details(recipe: recipe),
-                        ),
-                      );
-                      fetchOwnedRecipes();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      child: ListTile(
-                        title: Text(recipe.title),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              10.0), // Adjust the value as needed
-                          child: Image.network(
-                            recipe.imageUrl,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
+          StreamBuilder<List<Recipe>>(
+            stream: storage.fetchOwnedRecipesAsStream(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else {
+                List<Recipe> ownedRecipes = snapshot.data!;
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: ownedRecipes.length,
+                    itemBuilder: (context, index) {
+                      Recipe recipe = ownedRecipes[index];
+                      return InkWell(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Details(recipe: recipe),
+                            ),
+                          );
+                          storage.fetchOwnedRecipes();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          child: ListTile(
+                            title: Text(recipe.title),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Image.network(
+                                recipe.imageUrl,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
-          else
-            // Show a message or any other content when there are no search results
-            const Expanded(
-              child: Center(
-                child: Text('No search results'),
-              ),
-            ),
-
-          // Show a button or any other content when the user is signed in
+                      );
+                    },
+                  ),
+                );
+              }
+            },
+          ),
           StreamBuilder<User?>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
