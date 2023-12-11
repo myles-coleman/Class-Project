@@ -50,7 +50,7 @@ class _DetailsState extends State<Details> {
           widget.recipe.extendedIngredients =
               responseData['extendedIngredients'];
 
-          ingredients = (widget.recipe.extendedIngredients as List<dynamic>)
+          ingredients = (responseData['extendedIngredients'] as List<dynamic>)
               .map((ingredient) {
             return ingredient['original'];
           }).join('\n');
