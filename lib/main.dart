@@ -18,8 +18,8 @@ void main() async {
     routes: {
       '/': (context) => const HomeRoute(),
       '/login': (context) => const LoginRoute(),
-      '/settings': (context) => const SettingsRoute(),
       '/myrecipes': (context) => const MyRecipesRoute(),
+      '/settings': (context) => const SettingsRoute(),
     },
   ));
 }

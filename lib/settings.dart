@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:classproject/components/drawer.dart';
 
 class SettingsRoute extends StatelessWidget {
   const SettingsRoute({super.key});
@@ -10,6 +11,7 @@ class SettingsRoute extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
+      drawer: Drawer(child: buildDrawer(context)),
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

@@ -32,18 +32,7 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
           },
         ),
       ),
-      drawer: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            // The user is not signed in
-            return buildDrawer(context);
-          } else {
-            return const SizedBox
-                .shrink(); // An empty widget when the user is signed in
-          }
-        },
-      ),
+      drawer: Drawer(child: buildDrawer(context)),
       body: Column(
         children: [
           StreamBuilder<List<Recipe>>(
