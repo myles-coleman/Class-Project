@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:classproject/components/recpie.dart';
@@ -57,6 +58,9 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
                     itemCount: ownedRecipes.length,
                     itemBuilder: (context, index) {
                       Recipe recipe = ownedRecipes[index];
+                      if (kDebugMode) {
+                        print(recipe.imageUrl);
+                      }
                       return InkWell(
                         onTap: () async {
                           await Navigator.push(
@@ -78,6 +82,13 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
                                 width: 100,
                                 height: 100,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  if (kDebugMode) {
+                                    print('Error loading image: $error');
+                                  }
+                                  return const Icon(Icons
+                                      .error); // Display an error icon if image loading fails
+                                },
                               ),
                             ),
                           ),

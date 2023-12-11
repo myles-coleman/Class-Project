@@ -78,7 +78,21 @@ class _DetailsState extends State<Details> {
 
     if (widget.recipe.isFavorite) {
       await recipeStorage.writeRecipe(widget.recipe);
+
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Recipe added to your library'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Recipe removed from your library'),
+          duration: Duration(seconds: 2),
+        ),
+      );
       await recipeStorage.deleteRecipe(widget.recipe.id.toString());
     }
   }
@@ -94,7 +108,6 @@ class _DetailsState extends State<Details> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Image at the top with aspect ratio
             AspectRatio(
               aspectRatio: 16 / 9,
               child: Image.network(
