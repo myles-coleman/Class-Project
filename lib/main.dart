@@ -12,7 +12,7 @@ void main() async {
 
   runApp(MaterialApp(
     theme: ThemeData(
-      primarySwatch: Colors.green,
+      primarySwatch: Colors.grey,
     ),
     initialRoute: '/',
     routes: {

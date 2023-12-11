@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -127,11 +126,15 @@ class _HomeRouteState extends State<HomeRoute> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         title: Text(recipe.title),
-                        leading: Image.network(
-                          recipe.imageUrl,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              10.0), // Adjust the value as needed
+                          child: Image.network(
+                            recipe.imageUrl,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
