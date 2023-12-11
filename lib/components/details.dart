@@ -16,6 +16,8 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   String displayContent = 'instructions'; // Default content to display
   bool isFavorite = false;
+  String instructions = ''; // Variable to hold instructions
+  String ingredients = ''; // Variable to hold ingredients
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _DetailsState extends State<Details> {
 
     Map<String, String> headers = {
       'x-rapidapi-key': apiKey,
-      'x-rapidapi-host': apiUrl
+      'x-rapidapi-host': apiUrl,
     };
 
     try {
@@ -39,10 +41,19 @@ class _DetailsState extends State<Details> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        // Process the responseData as needed
-        if (kDebugMode) {
-          print(responseData);
-        }
+
+        // Update state variables with received data
+        setState(() {
+          instructions =
+              responseData['instructions'] ?? 'No instructions available';
+          ingredients = (responseData['extendedIngredients'] as List<dynamic>)
+              .map((ingredient) =>
+                  Ingredient.fromJson(ingredient).originalString)
+              .join('\n');
+          if (kDebugMode) {
+            print(responseData['extendedIngredients']);
+          }
+        });
       } else {
         throw Exception('Failed to load recipe information');
       }
@@ -59,83 +70,81 @@ class _DetailsState extends State<Details> {
       appBar: AppBar(
         title: Text(widget.recipe.title),
       ),
-      body: Column(
-        children: [
-          // Image at the top with aspect ratio
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Image.network(
-              widget.recipe.imageUrl,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            displayContent = 'instructions';
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.black, width: 2),
-                          backgroundColor: displayContent == 'instructions'
-                              ? Colors.black
-                              : null,
-                        ),
-                        child: const Text('Instructions'),
-                      ),
-                      OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            displayContent = 'ingredients';
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.black, width: 2),
-                          backgroundColor: displayContent == 'ingredients'
-                              ? Colors.black
-                              : null,
-                        ),
-                        child: const Text('Ingredients'),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isFavorite = !isFavorite;
-                          });
-                        },
-                        icon: Icon(
-                          Icons.favorite,
-                          color: isFavorite ? Colors.red : Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Display content based on the button pressed
-                  if (displayContent == 'instructions')
-                    Text(
-                      widget.recipe.instructions,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  if (displayContent == 'ingredients')
-                    const Text(
-                      'something',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image at the top with aspect ratio
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.network(
+                widget.recipe.imageUrl,
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      displayContent = 'instructions';
+                    });
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.black, width: 2),
+                    backgroundColor:
+                        displayContent == 'instructions' ? Colors.black : null,
+                  ),
+                  child: const Text('Instructions'),
+                ),
+                OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      displayContent = 'ingredients';
+                    });
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.black, width: 2),
+                    backgroundColor:
+                        displayContent == 'ingredients' ? Colors.black : null,
+                  ),
+                  child: const Text('Ingredients'),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isFavorite = !isFavorite;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.favorite,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Display content based on the button pressed
+            if (displayContent == 'instructions')
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  instructions,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            if (displayContent == 'ingredients')
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  ingredients,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
