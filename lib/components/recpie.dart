@@ -162,7 +162,7 @@ class Ingredient {
       unit: json['unit'] ?? '',
       unitShort: json['unitShort'] ?? '',
       unitLong: json['unitLong'] ?? '',
-      originalString: json['originalString'] ?? '',
+      originalString: json['originalString'] ?? 'Unknown Ingredient',
       metaInformation: List<String>.from(json['metaInformation'] ?? []),
     );
   }

@@ -16,8 +16,8 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   String displayContent = 'instructions'; // Default content to display
   bool isFavorite = false;
-  String instructions = ''; // Variable to hold instructions
-  String ingredients = ''; // Variable to hold ingredients
+  String instructions = '';
+  String ingredients = '';
 
   @override
   void initState() {
@@ -47,12 +47,9 @@ class _DetailsState extends State<Details> {
           instructions =
               responseData['instructions'] ?? 'No instructions available';
           ingredients = (responseData['extendedIngredients'] as List<dynamic>)
-              .map((ingredient) =>
-                  Ingredient.fromJson(ingredient).originalString)
-              .join('\n');
-          if (kDebugMode) {
-            print(responseData['extendedIngredients']);
-          }
+              .map((ingredient) {
+            return ingredient['original'];
+          }).join('\n');
         });
       } else {
         throw Exception('Failed to load recipe information');
@@ -66,6 +63,7 @@ class _DetailsState extends State<Details> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> sentences = instructions.split('. ');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.recipe.title),
@@ -126,13 +124,33 @@ class _DetailsState extends State<Details> {
               ],
             ),
             const SizedBox(height: 20),
-            // Display content based on the button pressed
             if (displayContent == 'instructions')
               Container(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  instructions,
-                  style: const TextStyle(fontSize: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < sentences.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${i + 1}.',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 8.0),
+                            Expanded(
+                              child: Text(
+                                sentences[i],
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
             if (displayContent == 'ingredients')
