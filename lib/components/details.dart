@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +18,7 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   String displayContent = 'instructions'; // Default content to display
   String ingredients = '';
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -79,13 +81,23 @@ class _DetailsState extends State<Details> {
     if (widget.recipe.isFavorite) {
       await recipeStorage.writeRecipe(widget.recipe);
 
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Recipe added to your library'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      if (user != null) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Recipe added to your library'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please Sign In to add recipe to your library'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

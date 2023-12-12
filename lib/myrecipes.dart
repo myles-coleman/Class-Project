@@ -5,6 +5,7 @@ import 'package:classproject/components/recpie.dart';
 import 'package:classproject/components/details.dart';
 import 'package:classproject/components/drawer.dart';
 import 'package:classproject/storage.dart';
+import 'package:classproject/components/create.dart';
 
 class MyRecipesRoute extends StatefulWidget {
   const MyRecipesRoute({super.key});
@@ -16,11 +17,38 @@ class MyRecipesRoute extends StatefulWidget {
 class _MyRecipesRouteState extends State<MyRecipesRoute> {
   final RecipeStorage storage = RecipeStorage();
 
+  Widget createRecipeButton(BuildContext context) {
+    return Row(
+      children: [
+        const Text('My Recipes'),
+        Expanded(
+          child: InkWell(
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const createRecipe(),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: const Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Recipes'),
+        title: createRecipeButton(context),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -47,9 +75,6 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
                     itemCount: ownedRecipes.length,
                     itemBuilder: (context, index) {
                       Recipe recipe = ownedRecipes[index];
-                      if (kDebugMode) {
-                        print(recipe.imageUrl);
-                      }
                       return InkWell(
                         onTap: () async {
                           await Navigator.push(

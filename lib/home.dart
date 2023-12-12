@@ -62,7 +62,7 @@ class _HomeRouteState extends State<HomeRoute> {
               decoration: const InputDecoration(
                 hintText: 'Search for recipes',
                 border: OutlineInputBorder(),
-                hintStyle: TextStyle(color: Colors.white),
+                hintStyle: TextStyle(color: Colors.black),
               ),
             ),
           ),
@@ -70,7 +70,7 @@ class _HomeRouteState extends State<HomeRoute> {
             onPressed: () {
               _showSearchOverlay();
             },
-            icon: const Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: Colors.black),
           ),
         ],
       ),
