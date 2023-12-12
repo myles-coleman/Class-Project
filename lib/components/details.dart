@@ -16,6 +16,7 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
+  final RecipeStorage storage = RecipeStorage();
   String displayContent = 'instructions'; // Default content to display
   String ingredients = '';
   User? user = FirebaseAuth.instance.currentUser;
@@ -23,7 +24,12 @@ class _DetailsState extends State<Details> {
   @override
   void initState() {
     super.initState();
-    fetchRecipeInformation();
+    Future.delayed(Duration.zero, () {
+      final currentRoute = ModalRoute.of(context);
+      if (currentRoute?.settings.name != '/myrecipes') {
+        fetchRecipeInformation();
+      }
+    });
   }
 
   Future<void> fetchRecipeInformation() async {
@@ -58,6 +64,9 @@ class _DetailsState extends State<Details> {
           }).join('\n');
         });
       } else {
+        if (kDebugMode) {
+          print(ingredients);
+        }
         throw Exception('Failed to load recipe information');
       }
     } catch (error) {

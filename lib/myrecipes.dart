@@ -5,7 +5,7 @@ import 'package:classproject/components/recpie.dart';
 import 'package:classproject/components/details.dart';
 import 'package:classproject/components/drawer.dart';
 import 'package:classproject/storage.dart';
-import 'package:classproject/components/create.dart';
+import 'package:classproject/create.dart';
 
 class MyRecipesRoute extends StatefulWidget {
   const MyRecipesRoute({super.key});
@@ -27,7 +27,7 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const createRecipe(),
+                  builder: (context) => const CreateRecipe(),
                 ),
               );
             },
