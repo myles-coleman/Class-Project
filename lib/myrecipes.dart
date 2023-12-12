@@ -68,6 +68,11 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (!snapshot.hasData || snapshot.data == null) {
+                return const Text(
+                    'No recipes available.'); // Add an appropriate message
               } else {
                 List<Recipe> ownedRecipes = snapshot.data!;
                 return Expanded(
