@@ -30,7 +30,7 @@ class RecipeStorage {
       await firestore.collection("Recipes").doc(recipe.id.toString()).set({
         'id': recipe.id,
         'title': recipe.title,
-        'imageUrl': recipe.imageUrl,
+        'image': recipe.imageUrl,
         'extendedIngredients': recipe.extendedIngredients
             .map((ingredient) => ingredient.toJson())
             .toList(),

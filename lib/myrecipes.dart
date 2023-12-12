@@ -75,6 +75,9 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
                     itemCount: ownedRecipes.length,
                     itemBuilder: (context, index) {
                       Recipe recipe = ownedRecipes[index];
+                      if (kDebugMode) {
+                        print(recipe.imageUrl);
+                      }
                       return InkWell(
                         onTap: () async {
                           await Navigator.push(

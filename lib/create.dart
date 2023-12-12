@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:classproject/components/recpie.dart';
 import 'package:classproject/storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class CreateRecipe extends StatefulWidget {
   const CreateRecipe({Key? key}) : super(key: key);
@@ -16,8 +20,35 @@ class _CreateRecipeState extends State<CreateRecipe> {
   final TextEditingController _ingredientController = TextEditingController();
   final List<Ingredient> _ingredients = [];
   late Recipe recipe;
+  final ImagePicker picker = ImagePicker();
+  List<File?> images = [];
+  String imageUrl = 'https://spoonacular.com/recipeImages/default-image.jpg';
 
-  void _submitRecipe() {
+  void _getPhoto() async {
+    final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      setState(() {
+        images.add(File(photo.path));
+      });
+    }
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    try {
+      String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+      final ref = FirebaseStorage.instance.ref().child('images/$imageName.jpg');
+      await ref.putFile(imageFile);
+      String imageUrl = await ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error uploading image: $e');
+      }
+      return '';
+    }
+  }
+
+  void _submitRecipe() async {
     List<Ingredient> ingredients = _ingredients
         .map((ingredient) => Ingredient(
               id: 0,
@@ -33,10 +64,15 @@ class _CreateRecipeState extends State<CreateRecipe> {
             ))
         .toList();
 
+    if (images.isNotEmpty) {
+      File imageFile = images.first!;
+      imageUrl = await uploadImage(imageFile);
+    }
+
     recipe = Recipe(
       id: 0,
       title: _titleController.text,
-      imageUrl: 'https://spoonacular.com/recipeImages/default-image.jpg',
+      imageUrl: imageUrl,
       imageType: '',
       nutrition: Nutrition(nutrients: []),
       extendedIngredients: ingredients,
@@ -67,6 +103,9 @@ class _CreateRecipeState extends State<CreateRecipe> {
     _instructionsController.clear();
     _ingredients.clear();
     _ingredientController.clear();
+    images.clear();
+    await storage.writeRecipe(recipe);
+    Navigator.pop(context);
   }
 
   Widget buttons(BuildContext context) {
@@ -89,10 +128,8 @@ class _CreateRecipeState extends State<CreateRecipe> {
         ),
         Expanded(
           child: InkWell(
-            onTap: () {
+            onTap: () async {
               _submitRecipe();
-              storage.writeRecipe(recipe);
-              Navigator.pop(context);
             },
             child: Container(
               padding: const EdgeInsets.all(8.0),
@@ -120,7 +157,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
             AspectRatio(
               aspectRatio: 16 / 9,
               child: Image.network(
-                'https://spoonacular.com/recipeImages/default-image.jpg',
+                imageUrl,
                 fit: BoxFit.cover,
               ),
             ),
@@ -180,6 +217,20 @@ class _CreateRecipeState extends State<CreateRecipe> {
                   _ingredientController.clear();
                 });
               },
+            ),
+            const SizedBox(height: 20),
+            const Text('Upload Image'),
+            InkWell(
+              onTap: () {
+                _getPhoto();
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: const Icon(
+                  Icons.photo_camera,
+                  color: Colors.black,
+                ),
+              ),
             ),
           ],
         ),

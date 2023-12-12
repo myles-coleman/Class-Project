@@ -58,11 +58,11 @@ class Recipe {
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
+    String imageUrl = _processApiImageUrl(json['image']);
     return Recipe(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
-      imageUrl:
-          'https://spoonacular.com/recipeImages/${json['image'] ?? 'default-image.jpg'}',
+      imageUrl: imageUrl,
       imageType: json['imageType'] ?? '',
       nutrition: Nutrition.fromJson(json),
       extendedIngredients: List<Ingredient>.from((json['extendedIngredients']
@@ -91,6 +91,17 @@ class Recipe {
       sourceName: json['sourceName'] ?? '',
       isFavorite: json['isFavorite'] ?? false,
     );
+  }
+
+  static String _processApiImageUrl(String? imageUrl) {
+    // Check if the URL has an HTTP header
+    if (imageUrl != null &&
+        (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
+      return imageUrl;
+    } else {
+      // If no HTTP header is present, prepend the base URL or use a default image URL
+      return 'https://spoonacular.com/recipeImages/$imageUrl';
+    }
   }
 }
 
