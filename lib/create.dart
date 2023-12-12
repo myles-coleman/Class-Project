@@ -156,10 +156,15 @@ class _CreateRecipeState extends State<CreateRecipe> {
           children: [
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-              ),
+              child: images.isNotEmpty
+                  ? Image.file(
+                      images.first!,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(height: 20),
             const Text('Recipe Name'),
