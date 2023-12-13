@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:classproject/components/details.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:classproject/components/recpie.dart';
@@ -20,6 +21,7 @@ class _EditRecipeState extends State<EditRecipe> {
   final TextEditingController _instructionsController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _ingredientController = TextEditingController();
+
   List<Ingredient> _ingredients = [];
   late Recipe recipe;
   final ImagePicker picker = ImagePicker();
@@ -117,6 +119,12 @@ class _EditRecipeState extends State<EditRecipe> {
     images.clear();
     await storage.writeRecipe(recipe);
     Navigator.pop(context);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Details(recipe: recipe),
+      ),
+    );
   }
 
   Widget buttons(BuildContext context) {
@@ -202,6 +210,54 @@ class _EditRecipeState extends State<EditRecipe> {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(_ingredients[index].originalString),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      _ingredientController.text =
+                          _ingredients[index].originalString;
+
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Edit Ingredient'),
+                          content: TextField(
+                            controller: _ingredientController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter updated ingredient',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _ingredients[index] = Ingredient(
+                                    originalString: _ingredientController.text,
+                                    id: 0,
+                                    aisle: '',
+                                    name: '',
+                                    image: '',
+                                    amount: 0,
+                                    unit: '',
+                                    unitShort: '',
+                                    unitLong: '',
+                                    metaInformation: [],
+                                  );
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Update'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),

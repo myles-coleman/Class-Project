@@ -17,14 +17,33 @@ class SettingsRoute extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             // The user is not signed in
-            return const Center(
-              child: Text('You are not signed in'),
+            return Center(
+              child: ElevatedButton(
+                child: const Text('Go to Login Page'),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+              ),
             );
           } else {
+            User user = snapshot.data!;
+
             return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text('You are signed in'),
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(user.photoURL ?? ''),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Welcome, ${user.displayName ?? 'User'}',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
                       FirebaseAuth.instance.signOut();
