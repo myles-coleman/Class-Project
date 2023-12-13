@@ -7,7 +7,6 @@ import 'package:classproject/components/details.dart';
 import 'package:classproject/components/drawer.dart';
 
 //search bar code referenced from https://stackoverflow.com/questions/56346660/how-to-add-a-texfield-inside-the-app-bar-in-flutter
-//when signed in, drawer opens gray screen upon opening for the first time
 
 class HomeRoute extends StatefulWidget {
   const HomeRoute({super.key});
@@ -116,8 +115,7 @@ class _HomeRouteState extends State<HomeRoute> {
                       child: ListTile(
                         title: Text(recipe.title),
                         leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              10.0), // Adjust the value as needed
+                          borderRadius: BorderRadius.circular(10.0),
                           child: Image.network(
                             recipe.imageUrl,
                             width: 100,
@@ -132,14 +130,11 @@ class _HomeRouteState extends State<HomeRoute> {
               ),
             )
           else
-            // Show a message or any other content when there are no search results
             const Expanded(
               child: Center(
                 child: Text('No search results'),
               ),
             ),
-
-          // Show a button or any other content when the user is signed in
           StreamBuilder<User?>(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
