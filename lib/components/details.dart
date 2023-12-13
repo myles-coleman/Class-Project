@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:classproject/edit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,23 +13,29 @@ class Details extends StatefulWidget {
   const Details({Key? key, required this.recipe}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _DetailsState createState() => _DetailsState();
 }
 
 class _DetailsState extends State<Details> {
   final RecipeStorage storage = RecipeStorage();
-  String displayContent = 'instructions'; // Default content to display
+  String displayContent = 'instructions';
   String ingredients = '';
   User? user = FirebaseAuth.instance.currentUser;
+  bool isInFirebase = false;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      final currentRoute = ModalRoute.of(context);
-      if (currentRoute?.settings.name != '/myrecipes') {
-        fetchRecipeInformation();
-      }
+    fetchRecipeInformation();
+
+    isRecipeInFirebase().then((result) {
+      setState(() {
+        isInFirebase = result;
+        if (kDebugMode) {
+          print(isInFirebase);
+        }
+      });
     });
   }
 
@@ -48,7 +55,6 @@ class _DetailsState extends State<Details> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
-        // Update state variables with received data
         setState(() {
           widget.recipe.instructions =
               responseData['instructions'] ?? 'No instructions available';
@@ -118,12 +124,38 @@ class _DetailsState extends State<Details> {
     }
   }
 
+  Future<bool> isRecipeInFirebase() async {
+    List<Recipe> firebaseRecipes = await storage.fetchOwnedRecipes();
+    return firebaseRecipes.any((recipe) => recipe.id == widget.recipe.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<String> sentences = widget.recipe.instructions.split('. ');
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.recipe.title),
+        actions: [
+          Builder(
+            builder: (context) {
+              if (isInFirebase == true) {
+                return IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditRecipe(recipe: widget.recipe),
+                      ),
+                    );
+                  },
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -6,29 +6,33 @@ import 'package:classproject/storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class CreateRecipe extends StatefulWidget {
-  const CreateRecipe({Key? key}) : super(key: key);
+class EditRecipe extends StatefulWidget {
+  final Recipe recipe;
+
+  const EditRecipe({Key? key, required this.recipe}) : super(key: key);
 
   @override
-  State<CreateRecipe> createState() => _CreateRecipeState();
+  State<EditRecipe> createState() => _EditRecipeState();
 }
 
-class _CreateRecipeState extends State<CreateRecipe> {
+class _EditRecipeState extends State<EditRecipe> {
   final RecipeStorage storage = RecipeStorage();
   final TextEditingController _instructionsController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _ingredientController = TextEditingController();
-  final List<Ingredient> _ingredients = [];
+  List<Ingredient> _ingredients = [];
   late Recipe recipe;
   final ImagePicker picker = ImagePicker();
   List<File?> images = [];
-  String imageUrl = 'https://spoonacular.com/recipeImages/default-image.jpg';
-  late int id = 0;
+  String imageUrl = '';
 
   @override
   void initState() {
     super.initState();
-    id = DateTime.now().millisecondsSinceEpoch;
+    _titleController.text = widget.recipe.title;
+    _instructionsController.text = widget.recipe.instructions;
+    _ingredients = widget.recipe.extendedIngredients;
+    imageUrl = widget.recipe.imageUrl;
   }
 
   void _getPhoto() async {
@@ -77,7 +81,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
     }
 
     recipe = Recipe(
-      id: id,
+      id: widget.recipe.id,
       title: _titleController.text,
       imageUrl: imageUrl,
       imageType: '',
@@ -106,10 +110,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
       isFavorite: true,
     );
 
-    id++;
-    if (kDebugMode) {
-      print("id: $id");
-    }
     _titleController.clear();
     _instructionsController.clear();
     _ingredients.clear();
@@ -122,7 +122,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
   Widget buttons(BuildContext context) {
     return Row(
       children: [
-        const Text('Create Recipe'),
+        const Text('Edit Recipe'),
         Expanded(
           child: InkWell(
             onTap: () {

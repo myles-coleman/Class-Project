@@ -99,7 +99,7 @@ class Recipe {
         (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
       return imageUrl;
     } else {
-      // If no HTTP header is present, prepend the base URL or use a default image URL
+      // If no HTTP header is present, prepend the base URL for spoonacular
       return 'https://spoonacular.com/recipeImages/$imageUrl';
     }
   }
@@ -119,7 +119,6 @@ class Nutrition {
         ),
       );
     } else {
-      // If 'nutrients' is null or not present, return an empty Nutrition object
       return Nutrition(nutrients: []);
     }
   }

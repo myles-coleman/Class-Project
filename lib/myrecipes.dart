@@ -71,8 +71,7 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else if (!snapshot.hasData || snapshot.data == null) {
-                return const Text(
-                    'No recipes available.'); // Add an appropriate message
+                return const Text('No recipes available.');
               } else {
                 List<Recipe> ownedRecipes = snapshot.data!;
                 return Expanded(
@@ -108,8 +107,7 @@ class _MyRecipesRouteState extends State<MyRecipesRoute> {
                                   if (kDebugMode) {
                                     print('Error loading image: $error');
                                   }
-                                  return const Icon(Icons
-                                      .error); // Display an error icon if image loading fails
+                                  return const Icon(Icons.error);
                                 },
                               ),
                             ),
